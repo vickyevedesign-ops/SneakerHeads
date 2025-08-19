@@ -47,7 +47,6 @@
   </div>
 
 <script>
-  // =================== GAME DATA ===================
   const challenges = {
     "airmax1": {
       "Watermelon": {
@@ -83,13 +82,17 @@
 
   document.getElementById("targetName").textContent = challengeName;
 
-  // ========== LOAD SVG ==========
-  fetch("airmax1.svg")
-    .then(res => res.text())
+  // Load SVG from repo root (works on GitHub Pages)
+  fetch("/SneakerHeads/airmax1.svg")
+    .then(res => {
+      if (!res.ok) throw new Error("SVG not found!");
+      return res.text();
+    })
     .then(svg => {
       document.getElementById("svgContainer").innerHTML = svg;
       initGame();
-    });
+    })
+    .catch(err => console.error(err));
 
   function initGame(){
     // Generate palette (target colours + distractors to total 9)
@@ -112,7 +115,6 @@
       paletteDiv.appendChild(swatch);
     });
 
-    // Paintable parts (inside #fillable, restricted to challenge IDs)
     for (let id in target){
       const el = document.getElementById(id);
       if(el){
