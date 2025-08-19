@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sneakerheads</title>
+  <style>
+    :root{
+      --bg:#0b0d10; --card:#13161b; --muted:#8b96a6; --text:#eaf0f6; --accent:#4cc9f0;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    h1{margin:0;font-size:24px}
+    .card{background:var(--card);border-radius:16px;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr 250px;gap:20px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .stage svg{max-width:100%;height:auto}
+    /* Palette */
+    .palette{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .swatch{width:30px;height:30px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.2)}
+    .swatch.selected{outline:3px solid var(--accent)}
+    /* Progress */
+    .progress{width:100%;height:12px;background:#1f2937;border-radius:8px;overflow:hidden;margin-top:10px}
+    .progress-fill{height:100%;width:0;background:var(--accent);transition:width .3s ease}
+    /* Hover state */
+    #fillable *{cursor:pointer;transition:stroke .2s ease}
+    #fillable *:hover{stroke:var(--accent);stroke-width:2}
+    #details, #background{pointer-events:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Sneakerheads</h1>
+      <div id="status">Target: <span id="targetName"></span></div>
+    </header>
+    <div class="grid">
+      <div class="card stage">
+        <!-- Inline SVG goes here -->
+        <!-- Replace with your Airmax1.svg content. Keep id="background", id="fillable", id="details" -->
+        <div id="svgContainer"></div>
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="card">
+        <h3>Palette</h3>
+        <div class="palette" id="palette"></div>
+        <p id="score">Score: 0</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =================== GAME DATA ===================
+    const challenges = {
+      "Watermelon": {
+        "mudguard": "#03aca7",
+        "middle": "#d3d3d3",
+        "back": "#d3d3d3",
+        "swoosh": "#ff4eaf",
+        "top": "#f7f9f9",
+        "toe_box": "#f7f9f9",
+        "layer": "#d3d3d3",
+        "lace_cover": "#f7f9f9",
+        "under_middle": "#f7f9f9",
+        "tounge_label": "#f7f9f9",
+        "out_sole": "#03aca7",
+        "tongue_lining": "#f7f9f9",
+        "lining": "#f7f9f9",
+        "laces": "#f7f9f9",
+        "tongue": "#f7f9f9",
+        "mid_sole": "#f7f9f9",
+        "airbag": "#03aca7",
+        "eyestay": "#03aca7",
+        "logo": "#03aca7"
+      }
+    };
+
+    let currentChallenge = "Watermelon";
+    let target = challenges[currentChallenge];
+    let userChoices = {};
+    let selectedColor = null;
+    let score = 0;
+
+    document.getElementById("targetName").textContent = currentChallenge;
+
+    // ========== LOAD SVG ==========
+    fetch("Airmax1.svg")
+      .then(res => res.text())
+      .then(svg => {
+        document.getElementById("svgContainer").innerHTML = svg;
+        initGame();
+      });
+
+    function initGame(){
+      // Generate palette (target colours + distractors)
+      const colors = new Set(Object.values(target));
+      // Add some distractors
+      ["#000000", "#ff0000", "#00ff00", "#0000ff"].forEach(c=>colors.add(c));
+      const paletteDiv = document.getElementById("palette");
+      paletteDiv.innerHTML = "";
+      colors.forEach(hex => {
+        const swatch = document.createElement("div");
+        swatch.className = "swatch";
+        swatch.style.background = hex;
+        swatch.addEventListener("click", ()=>{
+          document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("selected"));
+          swatch.classList.add("selected");
+          selectedColor = hex;
+        });
+        paletteDiv.appendChild(swatch);
+      });
+
+      // Make fillable parts clickable
+      for (let id in target){
+        let el = document.getElementById(id);
+        if(el){
+          el.addEventListener("click", ()=>{
+            if(!selectedColor) return;
+            el.setAttribute("fill", selectedColor);
+            userChoices[id] = selectedColor;
+            checkProgress();
+          });
+        }
+      }
+    }
+
+    function checkProgress(){
+      const total = Object.keys(target).length;
+      let correct = 0;
+      for (let id in target){
+        if(userChoices[id] && userChoices[id].toLowerCase() === target[id].toLowerCase()){
+          correct++;
+        }
+      }
+      const percent = Math.round((correct/total)*100);
+      document.getElementById("progressFill").style.width = percent+"%";
+
+      if(percent===100){
+        alert("Correct! You completed " + currentChallenge + "!");
+        score++;
+        document.getElementById("score").textContent = "Score: "+score;
+        // Load next challenge here (extend challenges)
+      }
+    }
+  </script>
+</body>
+</html>
