@@ -6,7 +6,7 @@
   <title>Sneakerheads</title>
   <style>
     :root{
-      --bg:#0b0d10; --card:#13161b; --muted:#8b96a6; --text:#eaf0f6; --accent:#4cc9f0;
+      --bg:#f7f6ed; --card:#13161b; --muted:#8b96a6; --text:#eaf0f6; --accent:#4cc9f0;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:sans-serif;background:var(--bg);color:var(--text)}
@@ -23,7 +23,7 @@
     .progress{width:100%;height:12px;background:#1f2937;border-radius:8px;overflow:hidden;margin-top:10px}
     .progress-fill{height:100%;width:0;background:var(--accent);transition:width .3s ease}
     #fillable *{cursor:pointer;transition:stroke .2s ease}
-    #fillable *:hover{stroke:var(--accent);stroke-width:2}
+    #fillable *:hover{stroke:var(--bg);stroke-width:2}
     #details, #background{pointer-events:none}
   </style>
 </head>
@@ -82,7 +82,7 @@
 
   document.getElementById("targetName").textContent = challengeName;
 
-  // Load SVG from repo root (works on GitHub Pages)
+  // ✅ Corrected fetch path (relative, works on GitHub Pages)
   fetch("airmax1.svg")
     .then(res => {
       if (!res.ok) throw new Error("SVG not found!");
@@ -115,15 +115,19 @@
       paletteDiv.appendChild(swatch);
     });
 
+    console.log("SVG loaded. Checking IDs...");
     for (let id in target){
       const el = document.getElementById(id);
       if(el){
+        console.log("Found:", id);
         el.addEventListener("click", ()=>{
           if(!selectedColor) return;
           el.setAttribute("fill", selectedColor);
           userChoices[id] = selectedColor;
           checkProgress();
         });
+      } else {
+        console.warn("Missing element:", id);
       }
     }
   }
