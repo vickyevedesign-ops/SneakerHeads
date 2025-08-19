@@ -17,14 +17,11 @@
     .grid{display:grid;grid-template-columns:1fr 250px;gap:20px}
     @media(max-width:900px){.grid{grid-template-columns:1fr}}
     .stage svg{max-width:100%;height:auto}
-    /* Palette */
     .palette{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
     .swatch{width:30px;height:30px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.2)}
     .swatch.selected{outline:3px solid var(--accent)}
-    /* Progress */
     .progress{width:100%;height:12px;background:#1f2937;border-radius:8px;overflow:hidden;margin-top:10px}
     .progress-fill{height:100%;width:0;background:var(--accent);transition:width .3s ease}
-    /* Hover state */
     #fillable *{cursor:pointer;transition:stroke .2s ease}
     #fillable *:hover{stroke:var(--accent);stroke-width:2}
     #details, #background{pointer-events:none}
@@ -38,8 +35,6 @@
     </header>
     <div class="grid">
       <div class="card stage">
-        <!-- Inline SVG goes here -->
-        <!-- Replace with your Airmax1.svg content. Keep id="background", id="fillable", id="details" -->
         <div id="svgContainer"></div>
         <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
       </div>
@@ -51,99 +46,103 @@
     </div>
   </div>
 
-  <script>
-    // =================== GAME DATA ===================
-    const challenges = {
+<script>
+  // =================== GAME DATA ===================
+  const challenges = {
+    "airmax1": {
       "Watermelon": {
-        "mudguard": "#03aca7",
-        "middle": "#d3d3d3",
-        "back": "#d3d3d3",
-        "swoosh": "#ff4eaf",
-        "top": "#f7f9f9",
-        "toe_box": "#f7f9f9",
-        "layer": "#d3d3d3",
-        "lace_cover": "#f7f9f9",
-        "under_middle": "#f7f9f9",
-        "tounge_label": "#f7f9f9",
-        "out_sole": "#03aca7",
-        "tongue_lining": "#f7f9f9",
-        "lining": "#f7f9f9",
-        "laces": "#f7f9f9",
-        "tongue": "#f7f9f9",
-        "mid_sole": "#f7f9f9",
-        "airbag": "#03aca7",
-        "eyestay": "#03aca7",
-        "logo": "#03aca7"
+        mudguard: "#03aca7",
+        middle: "#d3d3d3",
+        back: "#d3d3d3",
+        swoosh: "#ff4eaf",
+        top: "#f7f9f9",
+        toe_box: "#f7f9f9",
+        layer: "#d3d3d3",
+        lace_cover: "#f7f9f9",
+        under_middle: "#f7f9f9",
+        tounge_label: "#f7f9f9",
+        out_sole: "#03aca7",
+        tongue_lining: "#f7f9f9",
+        lining: "#f7f9f9",
+        laces: "#f7f9f9",
+        tongue: "#f7f9f9",
+        mid_sole: "#f7f9f9",
+        airbag: "#03aca7",
+        eyestay: "#03aca7",
+        logo: "#03aca7"
       }
-    };
+    }
+  };
 
-    let currentChallenge = "Watermelon";
-    let target = challenges[currentChallenge];
-    let userChoices = {};
-    let selectedColor = null;
-    let score = 0;
+  let sneaker = "airmax1";
+  let challengeName = "Watermelon";
+  let target = challenges[sneaker][challengeName];
+  let userChoices = {};
+  let selectedColor = null;
+  let score = 0;
 
-    document.getElementById("targetName").textContent = currentChallenge;
+  document.getElementById("targetName").textContent = challengeName;
 
-    // ========== LOAD SVG ==========
-    fetch("Airmax1.svg")
-      .then(res => res.text())
-      .then(svg => {
-        document.getElementById("svgContainer").innerHTML = svg;
-        initGame();
+  // ========== LOAD SVG ==========
+  fetch("airmax1.svg")
+    .then(res => res.text())
+    .then(svg => {
+      document.getElementById("svgContainer").innerHTML = svg;
+      initGame();
+    });
+
+  function initGame(){
+    // Generate palette (target colours + distractors to total 9)
+    const colors = Array.from(new Set(Object.values(target)));
+    const distractors = ["#000000","#ff0000","#00ff00","#0000ff","#e5e7eb"];
+    while(colors.length < 9) colors.push(distractors.shift());
+    colors.sort(() => Math.random()-0.5);
+
+    const paletteDiv = document.getElementById("palette");
+    paletteDiv.innerHTML = "";
+    colors.forEach(hex => {
+      const swatch = document.createElement("div");
+      swatch.className = "swatch";
+      swatch.style.background = hex;
+      swatch.addEventListener("click", ()=>{
+        document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("selected"));
+        swatch.classList.add("selected");
+        selectedColor = hex;
       });
+      paletteDiv.appendChild(swatch);
+    });
 
-    function initGame(){
-      // Generate palette (target colours + distractors)
-      const colors = new Set(Object.values(target));
-      // Add some distractors
-      ["#000000", "#ff0000", "#00ff00", "#0000ff"].forEach(c=>colors.add(c));
-      const paletteDiv = document.getElementById("palette");
-      paletteDiv.innerHTML = "";
-      colors.forEach(hex => {
-        const swatch = document.createElement("div");
-        swatch.className = "swatch";
-        swatch.style.background = hex;
-        swatch.addEventListener("click", ()=>{
-          document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("selected"));
-          swatch.classList.add("selected");
-          selectedColor = hex;
+    // Paintable parts (inside #fillable, restricted to challenge IDs)
+    for (let id in target){
+      const el = document.getElementById(id);
+      if(el){
+        el.addEventListener("click", ()=>{
+          if(!selectedColor) return;
+          el.setAttribute("fill", selectedColor);
+          userChoices[id] = selectedColor;
+          checkProgress();
         });
-        paletteDiv.appendChild(swatch);
-      });
-
-      // Make fillable parts clickable
-      for (let id in target){
-        let el = document.getElementById(id);
-        if(el){
-          el.addEventListener("click", ()=>{
-            if(!selectedColor) return;
-            el.setAttribute("fill", selectedColor);
-            userChoices[id] = selectedColor;
-            checkProgress();
-          });
-        }
       }
     }
+  }
 
-    function checkProgress(){
-      const total = Object.keys(target).length;
-      let correct = 0;
-      for (let id in target){
-        if(userChoices[id] && userChoices[id].toLowerCase() === target[id].toLowerCase()){
-          correct++;
-        }
-      }
-      const percent = Math.round((correct/total)*100);
-      document.getElementById("progressFill").style.width = percent+"%";
-
-      if(percent===100){
-        alert("Correct! You completed " + currentChallenge + "!");
-        score++;
-        document.getElementById("score").textContent = "Score: "+score;
-        // Load next challenge here (extend challenges)
+  function checkProgress(){
+    const total = Object.keys(target).length;
+    let correct = 0;
+    for (let id in target){
+      if(userChoices[id] && userChoices[id].toLowerCase() === target[id].toLowerCase()){
+        correct++;
       }
     }
-  </script>
+    const percent = Math.round((correct/total)*100);
+    document.getElementById("progressFill").style.width = percent+"%";
+
+    if(percent===100){
+      alert("Correct! You completed " + challengeName + "!");
+      score++;
+      document.getElementById("score").textContent = "Score: "+score;
+    }
+  }
+</script>
 </body>
 </html>
