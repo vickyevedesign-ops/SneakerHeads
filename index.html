@@ -83,7 +83,7 @@
   document.getElementById("targetName").textContent = challengeName;
 
   // Load SVG from repo root (works on GitHub Pages)
-  fetch("/SneakerHeads/airmax1.svg")
+  fetch("airmax1.svg")
     .then(res => {
       if (!res.ok) throw new Error("SVG not found!");
       return res.text();
