@@ -7,7 +7,7 @@
 <style>
   @font-face {
     font-family: 'AccessMN';
-    src: url(data:font/ttf;base64,AAEAAAARAQAABAAQRFNJR8xk1KgAAAE6AAAAYkdQT1Ow4u5tAAABuAAABBhHU1VYb3uZtAAAApgAAAJ4T1MvMl0JdcIAAAL8AAAAYGNtYXAB/7JaAAADgAAAAGhjdnQg1Spg7wAAA/AAAAAIZnBnbR6+FrUAAARUAAABbGdhc3AAAAAQAAAGeAAAACR2hlYWQd3Q3mAAAGxAAAADZoaGVhCOZB7wAABzAAAAAkaG10eF0qP8kAAAc8AAAAEGxvY2EG2Hf+AAAHhAAAABRtYXhwAIgA0QAAB6gAAAAgbmFtZZa8b7oAAAe0AAABbHBvc3Q2uP1lAAAKGAAAACpwcmVw3a2n0QAAChwAAABeg3Zw4p7QWQAAAqgAAAAYQ2FzdHC4BpZfAAAK2AAAAGkY2FybQT2e0T8AAAswAAAADJmZWFuX0IFpQAALEgAAAAgbGlnYQORnT0AAC0oAAAAIG1hcHAA2fC7AAAtUAAAAAhwb3N0i7QAHgAALXwAAAArcHJlcHhM2V6bAAAuEAAAAGgAQABZAFgAXABgAHkAbQCDAIwAjgCQAJQAmgCkAKYApwCqAK0AsgC2ALoAvADbAOMAmAEAAQwGAgsNExkgJyswMzY/RAAAAgABAAAAAQAAAAABAAACAAEAAQAAAgAAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAQABAAAAAQAAAAEAAAAAAAEAAQABAAAAAQAAAABBY2Nlc3MgTU4gTWVkaXVtAAAAAAEAAABWAEoAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype');
+    src: url('Access MN Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -18,266 +18,170 @@
     --pink:#FF5B78;
     --offwhite:#F9F7EF;
     --gray:#E7E7E7;
-
     --bg:#F9F7EF;
-    --ink:#000000;
-
-    --stage-w: 1920px;
-    --stage-h: 1080px;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin:0; padding:0; }
 
-  html, body {
-    margin: 0;
-    height: 100%;
+  body {
     background: var(--bg);
-    color: var(--ink);
-    font-family: 'AccessMN', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family: 'AccessMN', system-ui, sans-serif;
+    height: 100vh;
+    overflow: hidden;
   }
 
-  /* Pixel-perfect 1920×1080 stage that scales to the viewport */
-  .stage-outer {
-    position: fixed; inset: 0; display: grid; place-items: center;
-    background: var(--bg); overflow: hidden;
-  }
-  .stage { width: var(--stage-w); height: var(--stage-h); transform-origin: top left; position: relative; }
-
-  /* Two-column layout: LEFT = SVG, RIGHT = UI (matches XD) */
   .grid {
     display: grid;
-    grid-template-columns: 1395px 525px;
-    width: 100%; height: 100%;
+    grid-template-columns: 65% 35%;
+    height: 100%;
   }
 
-  .left { position: relative; padding-left: 98px; padding-top: 0; }
-  .right { position: relative; padding-top: 200px; padding-left: 0; padding-right: 40px; }
+  .left {
+    padding: 40px;
+  }
 
-  /* Typography from XD */
-  .brand-title { position: absolute; left: 735px; top: 36px; font-size: 40px; letter-spacing: 1px; }
-  .small-label { font-size: 13px; }
-  .copy { font-size: 15px; line-height: 1.35; max-width: 420px; }
-  .title-xl { font-size: 50px; margin: 4px 0 24px 0; }
-  .foot { position: absolute; left: 1432px; bottom: 24px; font-size: 9px; opacity: .75; }
+  .right {
+    padding: 100px 40px;
+  }
 
-  .challenge-label { margin-bottom: 0; }
-  .challenge-name { margin: 0 0 12px 0; }
-  .release { font-size: 13px; margin: 8px 0 24px; }
-  .desc { margin: 16px 0 32px; }
+  svg {
+    width: 100%;
+    height: auto;
+  }
 
-  .score { font-size: 20px; margin: 40px 0 16px 0; }
+  #detail, #background { pointer-events: none; }
+  #fillable > g[id] * { cursor: pointer; }
+  #fillable > g[id]:hover * { filter: brightness(1.06); }
+
+  h1 { font-size: 50px; margin-bottom: 20px; }
+  .score { font-size: 20px; margin: 20px 0; }
 
   .palette {
     display: grid;
     grid-template-columns: repeat(4, 54px);
     gap: 16px;
-    margin: 8px 0 24px 0;
+    margin: 20px 0;
   }
   .swatch {
-    width: 54px; height: 54px; border-radius: 12px;
+    width: 54px; height: 54px;
+    border-radius: 12px;
     border: 1px solid rgba(0,0,0,.2);
     cursor: pointer;
   }
-  .swatch.active { outline: 3px solid #000; outline-offset: 2px; }
+  .swatch.active { outline: 3px solid #000; }
 
-  .btn-row { display: flex; gap: 16px; align-items: center; margin: 16px 0 24px; }
-  .btn { font-size: 20px; padding: 12px 18px; border-radius: 10px; border: 1px solid #000; background: transparent; cursor: pointer; }
-
-  .cta-free { font-size: 20px; margin-top: 24px; }
-
-  /* SVG element */
-  #svgObject { width: 100%; max-width: 1300px; display: block; }
-  .completed {
-    position: absolute; inset: 0; display: none;
-    background: rgba(255,255,255,.92);
-    align-items: center; justify-content: center; text-align: center; flex-direction: column;
-  }
-  .completed.show { display: flex; }
-  .completed h2 { font-size: 56px; margin: 0 0 8px 0; }
-  .completed p { font-size: 18px; margin: 0; }
-
-  .hidden { display: none !important; }
+  .btn { font-size: 20px; padding: 10px 14px; border: 1px solid #000; cursor: pointer; border-radius: 10px; background: transparent; }
 </style>
 </head>
 <body>
-  <div class="stage-outer">
-    <div id="stage" class="stage">
-      <div class="grid">
-        <!-- LEFT: the SVG -->
-        <div class="left">
-          <!-- Keep airmax1.svg beside this HTML file -->
-          <object id="svgObject" type="image/svg+xml" data="airmax1.svg" aria-label="Air Max 1"></object>
-
-          <div id="completed" class="completed">
-            <h2>COMPLETED</h2>
-            <p>18 / 18 correct – nice!</p>
-          </div>
-        </div>
-
-        <!-- RIGHT: the UI -->
-        <div class="right">
-          <div class="small-label challenge-label">YOUR CHALLANGE:</div>
-          <h1 class="title-xl challenge-name">WATERMELON</h1>
-          <div class="release">RELEASED 2018</div>
-
-          <div class="copy desc">Fill the sneaker with the correct colours to match the famous colourway!</div>
-
-          <div id="score" class="score">0 OUT OF 18 CORRECT</div>
-
-          <div id="palette" class="palette"></div>
-
-          <div class="btn-row">
-            <button id="restart" class="btn">RESTART</button>
-            <button id="freeuse" class="btn" aria-pressed="false">FREE USE</button>
-          </div>
-
-          <div class="cta-free">I JUST WANNA COLOUR IN</div>
-        </div>
-      </div>
-
-      <div class="brand-title">SNEAKERHEAD</div>
-      <div class="foot">CREATED BY VICKYEVE / WWWVICKYHANLON.CO.UK</div>
+<div class="grid">
+  <div class="left">
+    <div id="sneaker-wrap">
+      <!-- Inline your airmax1.svg here -->
     </div>
   </div>
+  <div class="right">
+    <h1>I JUST WANNA COLOUR IN</h1>
+    <div class="palette" id="palette"></div>
+    <div class="score">Score: <span id="score">0</span> / 18</div>
+    <button id="freeMode" class="btn">Free Mode</button>
+    <input type="color" id="colorPicker" class="hidden"/>
+  </div>
+</div>
 
 <script>
-  /* Scale the 1920×1080 stage to fit any screen (keeps the XD layout perfect) */
-  function scaleStage() {
-    const stage = document.getElementById('stage');
-    const W = 1920, H = 1080;
-    const s = Math.min(window.innerWidth / W, window.innerHeight / H);
-    stage.style.transform = `scale(${s})`;
-  }
-  window.addEventListener('resize', scaleStage);
-  scaleStage();
+const correctColors = {
+  logo: "#35BA89",
+  eyestay: "#35BA89",
+  airbag: "#35BA89",
+  midsole: "#F9F7EF",
+  tongue: "#F9F7EF",
+  laces: "#F9F7EF",
+  lining: "#E7E7E7",
+  tonguelining: "#E7E7E7",
+  outsole: "#35BA89",
+  tonguelabel: "#F9F7EF",
+  undermiddle: "#F9F7EF",
+  lacecover: "#F9F7EF",
+  layer: "#E7E7E7",
+  toebox: "#F9F7EF",
+  top: "#F9F7EF",
+  swoosh: "#FF5B78",
+  back: "#E7E7E7",
+  middle: "#E7E7E7",
+  mudguard: "#35BA89"
+};
 
-  /* Part IDs exactly as in your SVG under #fillable */
-  const PARTS = ["logo","eyestay","airbag","midsole","tongue","laces","lining","tonguelining","outsole","toungelabel","undermiddle","lacecover","layer","toebox","top","swoosh","back","middle","mudguard"];
+let score = 0;
+let activeColor = null;
+let freeMode = false;
 
-  /* Watermelon target colours */
-  const TARGET = {
-    logo:"#35BA89", eyestay:"#35BA89", airbag:"#35BA89", outsole:"#35BA89", mudguard:"#35BA89",
-    swoosh:"#FF5B78",
-    midsole:"#F9F7EF", tongue:"#F9F7EF", laces:"#F9F7EF", toebox:"#F9F7EF", top:"#F9F7EF",
-    lining:"#E7E7E7", tonguelining:"#E7E7E7", toungelabel:"#E7E7E7", undermiddle:"#E7E7E7",
-    lacecover:"#E7E7E7", layer:"#E7E7E7", back:"#E7E7E7", middle:"#E7E7E7"
-  };
+const paletteEl = document.getElementById("palette");
+const scoreEl = document.getElementById("score");
+const colorPicker = document.getElementById("colorPicker");
+const freeModeBtn = document.getElementById("freeMode");
 
-  const UNIQUE_COLORS = ["#35BA89","#F9F7EF","#E7E7E7","#FF5B78"]; // palette tiles
-  let selected = UNIQUE_COLORS[0];
-
-  /* Build the palette */
-  const paletteEl = document.getElementById('palette');
-  UNIQUE_COLORS.forEach(c => {
+// generate palette (game mode)
+function randomColor(){
+  return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+}
+function buildPalette(){
+  paletteEl.innerHTML = '';
+  const required = [...new Set(Object.values(correctColors))];
+  const pool = [...required];
+  while(pool.length < 12){ pool.push(randomColor()); }
+  shuffle(pool).forEach(c=>{
     const sw = document.createElement('div');
-    sw.className = 'swatch';
-    sw.style.background = c;
-    sw.dataset.color = c;
-    sw.addEventListener('click', () => {
-      selected = c;
-      document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+    sw.className='swatch';
+    sw.style.background=c;
+    sw.addEventListener('click',()=>{
+      document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
       sw.classList.add('active');
+      activeColor=c;
     });
     paletteEl.appendChild(sw);
   });
-  paletteEl.firstElementChild?.classList.add('active');
+}
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
 
-  let svgDoc = null;
-  let fillable = null;
+function updateScore(){
+  scoreEl.textContent = score;
+}
 
-  /* When the inline SVG loads, wire up the painting */
-  document.getElementById('svgObject').addEventListener('load', (e) => {
-    svgDoc = e.target.contentDocument;
-    if (!svgDoc) return;
-    fillable = svgDoc.querySelector('#fillable');
-
-    /* Lock background/detail layers */
-    ['#detail','#details','#details-2','#background','#background-2'].forEach(sel => {
-      const el = svgDoc.querySelector(sel);
-      if (el) el.style.pointerEvents = 'none';
-    });
-
-    /* Delegate clicks inside #fillable to the nearest part group */
-    svgDoc.addEventListener('click', (evt) => {
-      if (!fillable || !selected) return;
-      let node = evt.target;
-      let foundId = null;
-      while (node && node !== fillable) {
-        if (node.tagName && node.tagName.toLowerCase() === 'g') {
-          const id = node.getAttribute('id');
-          if (id && PARTS.includes(id)) { foundId = id; break; }
-        }
-        node = node.parentNode;
+function attachFillables(){
+  const svg = document.querySelector("#sneaker-wrap svg");
+  if(!svg) return;
+  svg.querySelectorAll("#fillable > g[id]").forEach(g=>{
+    g.addEventListener('click',()=>{
+      if(!activeColor && !freeMode) return;
+      const id = g.id;
+      const chosen = freeMode ? colorPicker.value : activeColor;
+      g.querySelectorAll('*').forEach(el=>el.setAttribute('fill',chosen));
+      if(!freeMode && correctColors[id] && chosen.toUpperCase()===correctColors[id]){
+        score++;
+        updateScore();
       }
-      if (!foundId) return;
-      paintPart(foundId, selected);
-      updateScore();
     });
-
-    updateScore();
   });
+}
 
-  function normaliseHex(hex) {
-    if (!hex) return null;
-    let h = hex.trim();
-    if (h.startsWith('rgb')) {
-      const nums = h.match(/\d+/g).map(Number);
-      h = '#' + nums.slice(0,3).map(n => n.toString(16).padStart(2,'0')).join('').toUpperCase();
-      return h;
-    }
-    if (h.startsWith('#') && h.length === 4) {
-      h = '#' + h[1]+h[1]+h[2]+h[2]+h[3]+h[3];
-    }
-    return h.toUpperCase();
+// free mode toggle
+freeModeBtn.addEventListener('click',()=>{
+  freeMode=!freeMode;
+  if(freeMode){
+    colorPicker.classList.remove('hidden');
+    colorPicker.click();
+  }else{
+    colorPicker.classList.add('hidden');
+    buildPalette();
   }
+});
+colorPicker.addEventListener('input',(e)=>{
+  activeColor=e.target.value;
+});
 
-  function paintPart(partId, color) {
-    if (!svgDoc) return;
-    const g = svgDoc.querySelector(`#fillable > g#${partId}`);
-    if (!g) return;
-    g.dataset.fill = normaliseHex(color);
-    g.querySelectorAll('path,polygon,rect,circle,ellipse,polyline').forEach(n => n.setAttribute('fill', color));
-  }
-
-  function updateScore() {
-    if (!svgDoc) return;
-    let correct = 0;
-    PARTS.forEach(id => {
-      const desired = normaliseHex(TARGET[id]);
-      if (!desired) return;
-      const g = svgDoc.querySelector(`#fillable > g#${id}`);
-      if (!g) return;
-      const childWithFill = g.querySelector('[fill]');
-      const current = normaliseHex(g.dataset.fill || (childWithFill && childWithFill.getAttribute('fill')));
-      if (current === desired) correct++;
-    });
-    const total = PARTS.length;
-    document.getElementById('score').textContent = `${correct} OUT OF ${total} CORRECT`;
-    document.getElementById('completed').classList.toggle('show', correct === total);
-  }
-
-  /* Buttons */
-  document.getElementById('restart').addEventListener('click', () => {
-    if (!svgDoc) return;
-    PARTS.forEach(id => {
-      const g = svgDoc.querySelector(`#fillable > g#${id}`);
-      if (!g) return;
-      g.removeAttribute('data-fill');
-      g.querySelectorAll('path,polygon,rect,circle,ellipse,polyline').forEach(n => n.removeAttribute('fill'));
-    });
-    document.getElementById('completed').classList.remove('show');
-    updateScore();
-  });
-
-  let freeUse = false;
-  const freeBtn = document.getElementById('freeuse');
-  freeBtn.addEventListener('click', () => {
-    freeUse = !freeUse;
-    freeBtn.setAttribute('aria-pressed', String(freeUse));
-    freeBtn.textContent = freeUse ? 'GAMEPLAY' : 'FREE USE';
-    document.getElementById('score').classList.toggle('hidden', freeUse);
-    document.getElementById('completed').classList.remove('show');
-  });
+buildPalette();
+attachFillables();
 </script>
 </body>
 </html>
